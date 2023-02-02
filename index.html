@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js"></script> -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+  <style>
+    #issMap{
+      height:360px;
+   
+    }
+  </style>
+  <title>Fetch JSON from API and map latitude and longitude - by CodingTrain</title>
+</head>
+<body>
+ 
+  <h1>Where is ISS?</h1>
+
+  <p>latitude: <span id="lat"></span>°<br>
+    longitude: <span id="lon"></span>°
+  </p>
+
+  <div id="issMap"></div>
+
+  <script>
+    // Making a map and tiles
+    const mymap = L.map('issMap').setView([0, 0], 1);
+   
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mymap);
+
+    //Making custom icon
+    var myIcon = L.icon({
+      iconUrl: 'iss200.png',
+      // shadowUrl: 'leaf-shadow.png',
+
+      iconSize:     [50, 32], // size of the icon
+      // shadowSize:   [25, 16], // size of the shadow
+      iconAnchor:   [25, 16], // point of the icon which will correspond to marker's location (location will be in the middle of image)
+      // shadowAnchor: [4, 62],  // the same for the shadow
+      // popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+    });
+
+    var marker = L.marker([0,0], {icon:myIcon}).addTo(mymap);
+  
+    const api_url = 'https://api.wheretheiss.at/v1/satellites/25544';
+
+    let firstTime = true;
+
+    async function getISS(){
+      const response = await fetch(api_url);
+      const data = await response.json(); // we want response as JSON
+      // console.log(data.latitude);
+      // console.log(data.longitude);
+      const {latitude, longitude} = data;
+
+      marker.setLatLng([latitude, longitude]);
+      
+      if(firstTime){
+      mymap.setView([latitude, longitude], 3);// 3 is for zoom level
+      firstTime = false;
+      }
+      document.getElementById("lat").textContent = latitude.toFixed(2);
+      document.getElementById("lon").textContent = longitude.toFixed(2);
+
+      // console.log(latitude);
+      // console.log(longitude);
+    }
+
+    getISS();
+
+    setInterval(getISS, 1000);
+    
+  </script>
+</body>
+</html>

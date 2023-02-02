@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fetch and Graph CSV - APIs by CodingTrain</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <canvas id="chart" width="800" heightd="400"></canvas>
+  <script>
+
+// window.addEventListener('load', setup);
+
+setup();
+
+
+
+
+async function setup() {
+  const data = await getData();
+  const ctx = document.getElementById('chart').getContext('2d');
+  // const globalTemps = await getData();
+
+
+  const myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.xs,
+      datasets: [
+        {
+          label: 'Global Average Temperature in Celsius',
+          data: data.ys,
+          fill: false,
+          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          borderWidth: 1
+        }
+      ]
+    },
+
+    options:{
+      scales:{
+        yAxes:{
+          ticks:{
+            callback: function(value, index, values){
+              return value +'°'; 
+              // '℃'
+            }
+          }
+        }
+      }
+    }
+
+  });
+}
+
+  getData();
+
+  async function getData(){
+
+    const xs=[];
+const ys = [];
+    const response = await fetch("data.csv");
+    const data = await response.text();
+    // console.log(data);
+
+    // var rows = data.split('\n'); split by \n means "by line-breaks"
+    // rows = rows.slice(1);  will cut off first(header)row
+    const table = data.split('\n').slice(1);  
+    // console.log(rows);
+    // console.log(rows[0]);
+
+    // for(let i =0; i<rows.length; i++){}
+    table.forEach(row=>{
+      const cols = row.split(',');
+      // console.log(row);
+      const year = cols[0];
+      xs.push(year);
+      const temp = cols[1];
+      console.log(year, temp);
+    //  ytemps.push(temp+14);
+    //  ytemps.push(Number(temp)+14);
+      ys.push(parseFloat(temp)+14);
+    });
+    return {xs, ys};
+  }
+
+ 
+    
+  </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consuming APIs by CodingTrain</title>
+</head>
+<body>
+  <h2>Fetching a poem</h2>
+  <p id="poem"></p>
+  
+  <script>
+    console.log("About to fetch a poem");
+
+    catchPoem()
+    .then(poem=>{
+      document.getElementById("poem").innerHTML = poem;
+      console.log("Yeyyyy, got poem")
+    })
+    .catch(error=>{
+      console.log("error!");
+      console.error(error);
+    })
+    ;
+
+    async function catchPoem(){
+      const response = await fetch("poem.txt"); //response equals the result of fetch function
+      // const para = await response.para();
+      return await response.text();
+     
+    }
+
+    
+  </script>
+</body>
+</html>
